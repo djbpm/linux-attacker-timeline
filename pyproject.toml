@@ -1,0 +1,9 @@
+[project]
+name = "linux-attacker-timeline"
+version = "0.1.0"
+description = "Modular log analysis engine reconstructing attacker timelines with MITRE ATT&CK mapping"
+authors = [{name = "Kailas"}]
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
