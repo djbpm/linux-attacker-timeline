@@ -1,8 +1,6 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-.venv/
-env/
-.vscode/
-.idea/
-.DS_Store
+venv/
+.env
+src/sample.log
