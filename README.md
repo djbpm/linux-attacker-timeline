@@ -23,9 +23,16 @@ Pipeline:
 
 ## Usage
 
-\\\ash
-python -B -m src.cli --input src/sample.log
-\\\
+[ALERT] Suspicious Download Command
+Severity: high
+MITRE Technique: T1105 - Ingress Tool Transfer
+Tactic: Command and Control
+
+[ALERT] Brute Force Login Attempt
+Severity: high
+MITRE Technique: T1110 - Brute Force
+Tactic: Credential Access
+
 
 ## Project Structure
 
