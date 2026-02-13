@@ -1,14 +1,15 @@
-from pathlib import Path
-
-
 def collect_lines(file_path: str):
     """
-    Reads a log file and returns raw lines.
+    Reads a log file and returns all lines.
     """
-    path = Path(file_path)
+    lines = []
 
-    if not path.exists():
-        raise FileNotFoundError(f"Log file not found: {file_path}")
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                lines.append(line.strip())
+    except FileNotFoundError:
+        print(f"[ERROR] File not found: {file_path}")
+        return []
 
-    with path.open("r", encoding="utf-8", errors="ignore") as f:
-        return f.readlines()
+    return lines
