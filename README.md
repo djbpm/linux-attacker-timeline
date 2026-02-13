@@ -3,7 +3,6 @@
 ![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)
 ![Security Scan](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/security.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.9%2B-informational)
 
 A modular log analysis and detection framework that reconstructs attacker activity timelines and maps findings to MITRE ATT&CK techniques.
