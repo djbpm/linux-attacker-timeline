@@ -15,7 +15,7 @@ graph TD
     E --> F[MITRE Mapping]
     F --> G[Timeline Builder]
     G --> H[Output Renderer]
-
+```
 
 ## Detection Capabilities
 
