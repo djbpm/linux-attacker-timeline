@@ -1,7 +1,8 @@
 __pycache__/
 *.pyc
-*.pyo
-*.log
-.env
+.pytest_cache/
+.venv/
+env/
 .vscode/
 .idea/
+.DS_Store
