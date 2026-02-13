@@ -69,33 +69,31 @@ graph TD
 - MITRE ATT&CK Technique Mapping
 
 ## Usage
+## Usage
 
+### 1️⃣ Clone the Repository
 
-### Install Dependencies
+```bash
+git clone https://github.com/djbpm/linux-attacker-timeline.git
+cd linux-attacker-timeline
+```
+
+### 2️⃣ Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run Detection Engine
+### 3️⃣ Run the Detection Engine
 
 ```bash
 python -m src.cli --input src/sample.log
 ```
 
-### Run Test Suite
+### 4️⃣ Run Test Suite
 
 ```bash
 pytest
-```
-
-### Example Output
-
-```
-[ALERT] Brute Force Login Attempt
-Severity: high
-MITRE Technique: T1110 - Brute Force
-Tactic: Credential Access
 ```
 
 
