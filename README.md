@@ -69,8 +69,6 @@ graph TD
 - MITRE ATT&CK Technique Mapping
 
 ## Usage
-## Usage
-
 ### 1️⃣ Clone the Repository
 
 ```bash
