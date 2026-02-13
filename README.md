@@ -70,10 +70,12 @@ graph TD
 
 ## Usage
 
-[ALERT] Suspicious Download Command
-Severity: high
-MITRE Technique: T1105 - Ingress Tool Transfer
-Tactic: Command and Control
+ Install dependencies
+pip install -r requirements.txt
+
+ Run detection engine
+python -m src.cli --input logs/sample.log
+
 
 [ALERT] Brute Force Login Attempt
 Severity: high
