@@ -70,17 +70,35 @@ graph TD
 
 ## Usage
 
- Install dependencies
+
+### Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
- Run detection engine
-python -m src.cli --input logs/sample.log
+### Run Detection Engine
 
+```bash
+python -m src.cli --input src/sample.log
+```
 
+### Run Test Suite
+
+```bash
+pytest
+```
+
+### Example Output
+
+```
 [ALERT] Brute Force Login Attempt
 Severity: high
 MITRE Technique: T1110 - Brute Force
 Tactic: Credential Access
+```
+
+
 
 
 ## Project Structure
