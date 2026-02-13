@@ -1,4 +1,6 @@
 # Linux Attacker Timeline Detection Engine
+![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)
+
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)
