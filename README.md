@@ -4,14 +4,18 @@ A modular log analysis and detection framework that reconstructs attacker activi
 
 ## Architecture
 
-Pipeline:
-1. Collection
-2. Normalization
-3. Correlation
-4. Detection
-5. MITRE Mapping
-6. Timeline Reconstruction
-7. Output Rendering
+## System Flow
+
+```mermaid
+graph TD
+    A[Log File Input] --> B[Collection]
+    B --> C[Normalization]
+    C --> D[Correlation]
+    D --> E[Detection Engine]
+    E --> F[MITRE Mapping]
+    F --> G[Timeline Builder]
+    G --> H[Output Renderer]
+
 
 ## Detection Capabilities
 
