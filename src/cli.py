@@ -10,9 +10,9 @@ from src.intel.mitre_mapper import enrich_with_mitre
 
 def main():
     parser = argparse.ArgumentParser()
+    
     parser.add_argument("--input", required=True, help="Path to log file")
-    parser = argparse.ArgumentParser()
-parser.add_argument("--input", required=True, help="Path to log file")
+    
 parser.add_argument(
     "--json",
     action="store_true",
