@@ -6,12 +6,11 @@ from src.detection.rule_engine import detect_events
 from src.timeline.timeline_builder import build_timeline
 from src.output.formatter import print_detections, print_timeline
 from src.intel.mitre_mapper import enrich_with_mitre
+from src.output.json_formatter import export_to_json
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Linux Attacker Timeline Detection Engine"
-    )
+    parser = argparse.ArgumentParser()
 
     parser.add_argument(
         "--input",
@@ -22,39 +21,35 @@ def main():
     parser.add_argument(
         "--json",
         action="store_true",
-        help="Export alerts to JSON file"
+        help="Export detections to JSON file"
     )
 
     args = parser.parse_args()
-    
-    print("DEBUG JSON FLAG:", args.json)
 
-
-    # 1️⃣ Read file
-    with open(args.input, "r") as f:
+    # 1. Read file
+    with open(args.input, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
-    # 2️⃣ Normalize
+    # 2. Normalize
     normalized_events = normalize_lines(lines)
 
-    # 3️⃣ Correlate
+    # 3. Correlate
     correlated_events = correlate_events(normalized_events)
 
-    # 4️⃣ Detect
+    # 4. Detect
     detections = detect_events(correlated_events)
 
-    # 5️⃣ MITRE Enrichment
+    # 5. MITRE Enrichment
     detections = enrich_with_mitre(detections)
 
-    # 6️⃣ Optional JSON Export
+    # 6. Optional JSON export
     if args.json:
-        from src.output.json_formatter import export_to_json
         export_to_json(detections)
 
-    # 7️⃣ Build Timeline
+    # 7. Build timeline
     timeline = build_timeline(correlated_events)
 
-    # 8️⃣ Output
+    # 8. Output to console
     print_detections(detections)
     print_timeline(timeline)
 
@@ -63,4 +58,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
