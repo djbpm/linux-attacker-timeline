@@ -26,6 +26,9 @@ def main():
     )
 
     args = parser.parse_args()
+    
+    print("DEBUG JSON FLAG:", args.json)
+
 
     # 1️⃣ Read file
     with open(args.input, "r") as f:
