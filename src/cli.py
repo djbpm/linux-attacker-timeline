@@ -7,19 +7,10 @@ from src.timeline.timeline_builder import build_timeline
 from src.output.formatter import print_detections, print_timeline
 from src.intel.mitre_mapper import enrich_with_mitre
 
-
 def main():
     parser = argparse.ArgumentParser()
-    
     parser.add_argument("--input", required=True, help="Path to log file")
-    
-parser.add_argument(
-    "--json",
-    action="store_true",
-    help="Export alerts to JSON file"
-)
-
-args = parser.parse_args()
+    parser.add_argument("--json", action="store_true", help="Export alerts to JSON file")
 
     args = parser.parse_args()
 
@@ -38,15 +29,16 @@ args = parser.parse_args()
 
     # 5. MITRE Enrichment
     detections = enrich_with_mitre(detections)
-# Optional JSON export
-if args.json:
-    from src.output.json_formatter import export_to_json
-    export_to_json(detections)
 
-    # 6. Build timeline
+    # 6. JSON Export (BEFORE printing)
+    if args.json:
+        from src.output.json_formatter import export_to_json
+        export_to_json(detections)
+
+    # 7. Build timeline
     timeline = build_timeline(correlated_events)
 
-    # 7. Output
+    # 8. Output
     print_detections(detections)
     print_timeline(timeline)
 
