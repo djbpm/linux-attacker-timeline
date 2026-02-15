@@ -1,0 +1,35 @@
+[
+    {
+        "rule_id": "R001",
+        "rule_name": "Possible SSH Brute Force",
+        "severity": "HIGH",
+        "event": {
+            "raw": "Feb 15 21:25:32 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2",
+            "timestamp": "1900-02-15T21:25:32",
+            "correlation_key": "failed_login",
+            "frequency": 3
+        }
+    },
+    {
+        "rule_id": "R001",
+        "rule_name": "Possible SSH Brute Force",
+        "severity": "HIGH",
+        "event": {
+            "raw": "Feb 15 21:25:33 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2",
+            "timestamp": "1900-02-15T21:25:33",
+            "correlation_key": "failed_login",
+            "frequency": 3
+        }
+    },
+    {
+        "rule_id": "R001",
+        "rule_name": "Possible SSH Brute Force",
+        "severity": "HIGH",
+        "event": {
+            "raw": "Feb 15 21:25:34 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2",
+            "timestamp": "1900-02-15T21:25:34",
+            "correlation_key": "failed_login",
+            "frequency": 3
+        }
+    }
+]

@@ -1,31 +1,29 @@
 def print_detections(detections):
-    print("\n===== DETECTIONS =====")
+    print("===== DETECTIONS =====")
 
     if not detections:
         print("No security alerts detected.")
         return
 
     for detection in detections:
-        print(f"\n[ALERT] {detection['rule_name']}")
-        print(f"Severity: {detection['severity']}")
+        rule_name = detection.get("rule_name", "Unknown Rule")
+        severity = detection.get("severity", "Unknown")
+        raw_event = detection.get("event", {}).get("raw", "No raw event")
 
-        mitre = detection.get("mitre", {})
-        if mitre:
-            print(f"MITRE Technique: {mitre.get('technique_id')} - {mitre.get('technique_name')}")
-            print(f"Tactic: {mitre.get('tactic')}")
+        print(f"\n[ALERT] {rule_name}")
+        print(f"Severity: {severity}")
+        print(f"Event: {raw_event}")
 
-        if detection.get("frequency"):
-            print(f"Frequency: {detection['frequency']}")
-
-        print(f"Event: {detection['event']['raw']}")
 
 def print_timeline(timeline):
     print("\n===== ATTACK TIMELINE =====")
 
     if not timeline:
-        print("Timeline is empty.")
+        print("No events available.")
         return
 
-    for event in timeline:
-        timestamp_str = event["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[{timestamp_str}] {event['raw']}")
+    for item in timeline:
+        timestamp = item.get("timestamp", "N/A")
+        raw = item.get("raw", "No raw event")
+        print(f"[{timestamp}] {raw}")
+

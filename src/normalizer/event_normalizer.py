@@ -1,38 +1,49 @@
-from datetime import datetime
 import re
+from datetime import datetime
 
-def normalize_lines(lines):
-    """
-    Level 2 Normalizer:
-    - Extracts timestamp if present
-    - Falls back to ingestion time
-    - Returns structured event objects
-    """
 
-    normalized_events = []
+def normalize_events(raw_logs):
+    normalized = []
 
-    timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
-
-    for line in lines:
+    for line in raw_logs:
         line = line.strip()
 
-        # Try to extract ISO timestamp from log line
-        match = re.search(timestamp_pattern, line)
+        if not line:
+            continue
+
+        # Extract timestamp (example: Feb 15 21:25:32)
+        match = re.match(r"(\w+\s+\d+\s+\d+:\d+:\d+)", line)
 
         if match:
+            timestamp_str = match.group(1)
+
             try:
-                parsed_timestamp = datetime.fromisoformat(match.group())
-            except:
-                parsed_timestamp = datetime.utcnow()
+                timestamp = datetime.strptime(timestamp_str, "%b %d %H:%M:%S")
+            except ValueError:
+                timestamp = None
         else:
-            parsed_timestamp = datetime.utcnow()
+            timestamp = None
 
         event = {
-            "timestamp": parsed_timestamp,
             "raw": line,
-            "event_type": "generic"
+            "timestamp": timestamp,
+            "correlation_key": extract_correlation_key(line)
         }
 
-        normalized_events.append(event)
+        normalized.append(event)
 
-    return normalized_events
+    return normalized
+
+
+def extract_correlation_key(line):
+    if "Failed password" in line:
+        return "failed_login"
+    elif "Accepted password" in line:
+        return "successful_login"
+    elif "wget" in line:
+        return "download_command"
+    elif "sudo" in line:
+        return "privilege_escalation"
+    else:
+        return "unknown"
+
