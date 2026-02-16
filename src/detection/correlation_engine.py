@@ -13,9 +13,10 @@ class CorrelationEngine:
             ts = alert.get("timestamp")
             if ts:
                 try:
-                    timestamps.append(datetime.fromisoformat(ts))
-                except Exception:
-                    pass
+    timestamps.append(datetime.fromisoformat(ts))
+except ValueError:
+    continue
+
 
         if len(timestamps) < 2:
             return False
