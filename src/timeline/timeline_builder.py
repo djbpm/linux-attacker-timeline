@@ -1,8 +1,23 @@
 def build_timeline(events):
     """
-    Level 2 Timeline:
-    - Sorts events chronologically
+    Build a sorted attack timeline from correlated events.
     """
 
-    sorted_events = sorted(events, key=lambda e: e["timestamp"])
-    return sorted_events
+    if not events:
+        return []
+
+    # Sort safely (avoid KeyError)
+    sorted_events = sorted(
+        events,
+        key=lambda e: e.get("timestamp", "")
+    )
+
+    timeline = []
+
+    for event in sorted_events:
+        timeline.append({
+            "timestamp": event.get("timestamp", "N/A"),
+            "raw": event.get("raw", "No raw event")
+        })
+
+    return timeline
