@@ -3,27 +3,30 @@ from src.detection.rules.base_rule import BaseRule
 
 class SudoPrivilegeEscalationRule(BaseRule):
     rule_id = "SUDO_PRIVILEGE_ESCALATION"
-    description = "User executed sudo command"
+    description = "Suspicious sudo privilege escalation activity detected"
     technique_id = "T1548"
     tactic = "Privilege Escalation"
-    severity = "medium"
+    severity = "high"
 
     def evaluate(self, events):
         alerts = []
+        sudo_events = []
 
         for event in events:
             raw = event.get("raw", "")
 
-            if "sudo" in raw and "COMMAND=" in raw:
-                alerts.append(
-                    {
-                        "rule_id": self.rule_id,
-                        "description": self.description,
-                        "technique_id": self.technique_id,
-                        "tactic": self.tactic,
-                        "severity": self.severity,
-                        "raw": raw,
-                    }
+            if "sudo" in raw and ("COMMAND=" in raw or "session opened" in raw):
+                sudo_events.append(raw)
+
+        if sudo_events:
+            alerts.append(
+                self.build_alert(
+                    evidence={
+                        "sudo_event_count": len(sudo_events),
+                        "events": sudo_events[:5]  # limit output size
+                    },
+                    confidence="high" if len(sudo_events) > 3 else "medium"
                 )
+            )
 
         return alerts
