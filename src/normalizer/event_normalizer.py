@@ -1,38 +1,42 @@
 from datetime import datetime
-import re
 
-def normalize_lines(lines):
+
+def normalize_events(raw_lines):
     """
-    Level 2 Normalizer:
-    - Extracts timestamp if present
-    - Falls back to ingestion time
-    - Returns structured event objects
+    Convert raw log lines into structured event dictionaries.
     """
 
-    normalized_events = []
+    events = []
 
-    timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"
-
-    for line in lines:
+    for line in raw_lines:
         line = line.strip()
-
-        # Try to extract ISO timestamp from log line
-        match = re.search(timestamp_pattern, line)
-
-        if match:
-            try:
-                parsed_timestamp = datetime.fromisoformat(match.group())
-            except:
-                parsed_timestamp = datetime.utcnow()
-        else:
-            parsed_timestamp = datetime.utcnow()
+        if not line:
+            continue
 
         event = {
-            "timestamp": parsed_timestamp,
+            "timestamp": None,
             "raw": line,
-            "event_type": "generic"
         }
 
-        normalized_events.append(event)
+        # Try parsing standard SSH log format
+        # Example:
+        # Feb 15 21:25:32 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
 
-    return normalized_events
+        try:
+            parts = line.split()
+            month = parts[0]
+            day = parts[1]
+            time = parts[2]
+
+            timestamp_str = f"{month} {day} {time}"
+            timestamp = datetime.strptime(timestamp_str, "%b %d %H:%M:%S")
+
+            event["timestamp"] = timestamp
+        except Exception:
+            # If parsing fails, keep raw only
+            event["timestamp"] = None
+
+        events.append(event)
+
+    return events
+

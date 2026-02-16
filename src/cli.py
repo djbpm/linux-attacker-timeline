@@ -1,43 +1,73 @@
-import argparse
+﻿import argparse
+import logging
+import sys
 
-from src.normalizer.event_normalizer import normalize_lines
+from src.collector.file_collector import collect_file
+from src.normalizer.event_normalizer import normalize_events
 from src.correlator.event_correlator import correlate_events
-from src.detection.rule_engine import detect_events
+from src.detection.rule_engine import RuleEngine
 from src.timeline.timeline_builder import build_timeline
-from src.output.formatter import print_detections, print_timeline
-from src.intel.mitre_mapper import enrich_with_mitre
+from src.output.formatter import print_detections, print_timeline, print_summary
+from src.output.json_formatter import export_json
+
+
+def setup_logging():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s"
+    )
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Linux Attacker Timeline Engine")
+
+    parser.add_argument("--input", required=True, help="Path to log file")
+    parser.add_argument("--severity", required=False, help="Filter by severity")
+    parser.add_argument("--export", required=False, help="Export detections to JSON")
+
+    return parser.parse_args()
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=True, help="Path to log file")
-    args = parser.parse_args()
+    args = parse_arguments()
 
-    # 1. Read file
-    with open(args.input, "r") as f:
-        lines = f.readlines()
+    logging.info("Starting Linux Attacker Timeline pipeline")
 
-    # 2. Normalize
-    normalized_events = normalize_lines(lines)
+    raw_events = collect_file(args.input)
+    normalized = normalize_events(raw_events)
+    correlated = correlate_events(normalized)
 
-    # 3. Correlate
-    correlated_events = correlate_events(normalized_events)
+    engine = RuleEngine()
+    detections = engine.detect(correlated)
 
-    # 4. Detect
-    detections = detect_events(correlated_events)
+    if args.severity:
+        detections = [
+            d for d in detections
+            if d.get("severity") == args.severity
+        ]
 
-    # 5. MITRE Enrichment
-    detections = enrich_with_mitre(detections)
+    timeline = build_timeline(correlated)
 
-    # 6. Build timeline
-    timeline = build_timeline(correlated_events)
-
-    # 7. Output
+    print("\n===== DETECTIONS =====\n")
     print_detections(detections)
+
+    print("\n===== ATTACK TIMELINE =====\n")
     print_timeline(timeline)
 
-    print("[INFO] Pipeline execution complete.")
+    print("\n===== SUMMARY =====\n")
+    print_summary(len(correlated), len(detections))
+
+    if args.export:
+        export_json(detections, args.export)
+        logging.info(f"Detections exported to {args.export}")
+
+    logging.info("Pipeline execution complete.")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        setup_logging()
+        main()
+    except Exception:
+        logging.exception("Fatal error occurred")
+        sys.exit(1)
