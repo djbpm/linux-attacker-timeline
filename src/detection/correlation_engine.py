@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 
 class CorrelationEngine:
+
     def __init__(self, alerts, window_minutes=10):
         self.alerts = alerts
         self.window = timedelta(minutes=window_minutes)
@@ -13,10 +14,9 @@ class CorrelationEngine:
             ts = alert.get("timestamp")
             if ts:
                 try:
-    timestamps.append(datetime.fromisoformat(ts))
-except ValueError:
-    continue
-
+                    timestamps.append(datetime.fromisoformat(ts))
+                except ValueError:
+                    continue
 
         if len(timestamps) < 2:
             return False
@@ -27,54 +27,46 @@ except ValueError:
         correlated = []
         rule_ids = {a.get("rule_id") for a in self.alerts}
 
-        # Stage 1: Account takeover
+        # Stage 1: Account Takeover
         if (
             "SSH_BRUTE_FORCE" in rule_ids
             and "SUSPICIOUS_LOGIN_AFTER_BRUTEFORCE" in rule_ids
         ):
             subset = [
                 a for a in self.alerts
-                if a.get("rule_id") in (
+                if a.get("rule_id") in {
                     "SSH_BRUTE_FORCE",
-                    "SUSPICIOUS_LOGIN_AFTER_BRUTEFORCE",
-                )
+                    "SUSPICIOUS_LOGIN_AFTER_BRUTEFORCE"
+                }
             ]
 
             if self._within_window(subset):
                 correlated.append({
                     "rule_id": "ACCOUNT_TAKEOVER_CHAIN",
-                    "description": "Brute force followed by login within time window",
                     "severity": "high",
                     "confidence": "high",
-                    "tactic_chain": [
-                        "Credential Access",
-                        "Initial Access"
-                    ],
+                    "stage": "Account Takeover"
                 })
 
-        # Stage 2: Privilege escalation
+        # Stage 2: Privilege Escalation
         if (
-            any(a.get("rule_id") == "ACCOUNT_TAKEOVER_CHAIN" for a in correlated)
-            and "SUDO_PRIVILEGE_ESCALATION" in rule_ids
+            "SUSPICIOUS_LOGIN_AFTER_BRUTEFORCE" in rule_ids
+            and "PRIVILEGE_ESCALATION_SUDO" in rule_ids
         ):
             subset = [
                 a for a in self.alerts
-                if a.get("rule_id") in (
-                    "SUDO_PRIVILEGE_ESCALATION",
-                )
+                if a.get("rule_id") in {
+                    "SUSPICIOUS_LOGIN_AFTER_BRUTEFORCE",
+                    "PRIVILEGE_ESCALATION_SUDO"
+                }
             ]
 
             if self._within_window(subset):
                 correlated.append({
-                    "rule_id": "FULL_SYSTEM_COMPROMISE",
-                    "description": "Account takeover escalated to root within time window",
+                    "rule_id": "FULL_ATTACK_CHAIN",
                     "severity": "critical",
                     "confidence": "high",
-                    "tactic_chain": [
-                        "Credential Access",
-                        "Initial Access",
-                        "Privilege Escalation"
-                    ],
+                    "stage": "Privilege Escalation"
                 })
 
         return correlated
