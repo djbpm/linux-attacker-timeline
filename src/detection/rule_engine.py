@@ -1,48 +1,33 @@
-def detect_events(events):
-    detections = []
-
-    for event in events:
-        raw = event.get("raw", "").lower()
-        freq = event.get("frequency", 1)
-        key = event.get("correlation_key", "")
-
-        # R001 - SSH Brute Force
-        if key == "failed_login" and freq >= 3:
-            detections.append({
-                "rule_id": "R001",
-                "rule_name": "Possible SSH Brute Force",
-                "severity": "HIGH",
-                "event": event
-            })
-
-        # R002 - Malicious Download
-        if key == "download_command" and "wget" in raw:
-            detections.append({
-                "rule_id": "R002",
-                "rule_name": "Suspicious File Download",
-                "severity": "MEDIUM",
-                "event": event
-            })
-
-    # R003 - Multi-stage Attack
-    has_bruteforce = any(
-        e.get("correlation_key") == "failed_login" and e.get("frequency", 1) >= 3
-        for e in events
-    )
-
-    has_download = any(
-        e.get("correlation_key") == "download_command"
-        for e in events
-    )
-
-    if has_bruteforce and has_download:
-        detections.append({
-            "rule_id": "R003",
-            "rule_name": "Multi-Stage Intrusion Pattern",
-            "severity": "CRITICAL",
-            "event": {"raw": "Multi-stage attack detected"}
-        })
-
-    return detections
+﻿from src.detection.rule_registry import get_all_rules
 
 
+class RuleEngine:
+    def __init__(self, rules=None):
+        # Allow dependency injection for testing
+        self.rules = rules if rules is not None else get_all_rules()
+
+    def validate_rule(self, rule):
+        if not hasattr(rule, "evaluate"):
+            raise TypeError(
+                f"Rule {rule.__class__.__name__} must implement evaluate()"
+            )
+
+        if not callable(rule.evaluate):
+            raise TypeError(
+                f"Rule {rule.__class__.__name__}.evaluate must be callable"
+            )
+
+    def detect(self, events):
+        alerts = []
+
+        for rule in self.rules:
+            self.validate_rule(rule)
+
+            try:
+                results = rule.evaluate(events)
+                if results:
+                    alerts.extend(results)
+            except Exception as e:
+                print(f"[ERROR] Rule {rule.__class__.__name__} failed: {e}")
+
+        return alerts

@@ -1,122 +1,73 @@
-import argparse
+﻿import argparse
 import logging
+import sys
 
+from src.collector.file_collector import collect_file
 from src.normalizer.event_normalizer import normalize_events
-from src.correlator.correlator import correlate_events
-from src.detection.rule_engine import detect_events
+from src.correlator.event_correlator import correlate_events
+from src.detection.rule_engine import RuleEngine
 from src.timeline.timeline_builder import build_timeline
-from src.output.formatter import print_detections, print_timeline
-<<<<<<< HEAD
-from src.intel.mitre_mapper import enrich_with_mitre
-=======
->>>>>>> fdd4fa6 (Add CI pipeline with GitHub Actions)
-from src.output.json_formatter import export_to_json
+from src.output.formatter import print_detections, print_timeline, print_summary
+from src.output.json_formatter import export_json
 
 
-def main():
-    # -------------------------
-    # Logging Configuration
-    # -------------------------
+def setup_logging():
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s"
     )
 
-    logger = logging.getLogger(__name__)
-    logger.info("Starting Linux Attacker Timeline pipeline")
 
-    # -------------------------
-    # CLI Arguments
-    # -------------------------
-    parser = argparse.ArgumentParser()
-<<<<<<< HEAD
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Linux Attacker Timeline Engine")
 
-    parser.add_argument(
-        "--input",
-        required=True,
-        help="Path to log file"
-    )
-
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Export detections to JSON file"
-    )
-
-    args = parser.parse_args()
-
-    # 1. Read file
-    with open(args.input, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-=======
     parser.add_argument("--input", required=True, help="Path to log file")
-    parser.add_argument("--json", action="store_true", help="Export alerts to JSON file")
-    args = parser.parse_args()
+    parser.add_argument("--severity", required=False, help="Filter by severity")
+    parser.add_argument("--export", required=False, help="Export detections to JSON")
 
-    # -------------------------
-    # 1. Load logs
-    # -------------------------
-    logger.info("Loading log file")
-    with open(args.input, "r") as f:
-        raw_logs = f.readlines()
->>>>>>> fdd4fa6 (Add CI pipeline with GitHub Actions)
+    return parser.parse_args()
 
-    # -------------------------
-    # 2. Normalize
-    # -------------------------
-    logger.info("Normalizing events")
-    normalized_events = normalize_events(raw_logs)
 
-    # -------------------------
-    # 3. Correlate
-    # -------------------------
-    logger.info("Correlating events")
-    correlated_events = correlate_events(normalized_events)
+def main():
+    args = parse_arguments()
 
-    # -------------------------
-    # 4. Detect
-    # -------------------------
-    logger.info("Running detection engine")
-    detections = detect_events(correlated_events)
+    logging.info("Starting Linux Attacker Timeline pipeline")
 
-<<<<<<< HEAD
-    # 5. MITRE Enrichment
-    detections = enrich_with_mitre(detections)
+    raw_events = collect_file(args.input)
+    normalized = normalize_events(raw_events)
+    correlated = correlate_events(normalized)
 
-    # 6. Optional JSON export
-    if args.json:
-        export_to_json(detections)
+    engine = RuleEngine()
+    detections = engine.detect(correlated)
 
-    # 7. Build timeline
-    timeline = build_timeline(correlated_events)
+    if args.severity:
+        detections = [
+            d for d in detections
+            if d.get("severity") == args.severity
+        ]
 
-    # 8. Output to console
-=======
-    # -------------------------
-    # 5. Build Timeline
-    # -------------------------
-    logger.info("Building timeline")
-    timeline = build_timeline(correlated_events)
+    timeline = build_timeline(correlated)
 
-    # -------------------------
-    # 6. Output
-    # -------------------------
->>>>>>> fdd4fa6 (Add CI pipeline with GitHub Actions)
+    print("\n===== DETECTIONS =====\n")
     print_detections(detections)
+
+    print("\n===== ATTACK TIMELINE =====\n")
     print_timeline(timeline)
 
-    if args.json:
-        logger.info("Exporting detections to JSON")
-        export_to_json(detections)
-        logger.info("JSON exported successfully")
+    print("\n===== SUMMARY =====\n")
+    print_summary(len(correlated), len(detections))
 
-    logger.info("Pipeline execution complete.")
+    if args.export:
+        export_json(detections, args.export)
+        logging.info(f"Detections exported to {args.export}")
+
+    logging.info("Pipeline execution complete.")
 
 
 if __name__ == "__main__":
-    main()
-
-<<<<<<< HEAD
-
-=======
->>>>>>> fdd4fa6 (Add CI pipeline with GitHub Actions)
+    try:
+        setup_logging()
+        main()
+    except Exception:
+        logging.exception("Fatal error occurred")
+        sys.exit(1)

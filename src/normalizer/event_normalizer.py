@@ -1,49 +1,42 @@
-import re
 from datetime import datetime
 
 
-def normalize_events(raw_logs):
-    normalized = []
+def normalize_events(raw_lines):
+    """
+    Convert raw log lines into structured event dictionaries.
+    """
 
-    for line in raw_logs:
+    events = []
+
+    for line in raw_lines:
         line = line.strip()
-
         if not line:
             continue
 
-        # Extract timestamp (example: Feb 15 21:25:32)
-        match = re.match(r"(\w+\s+\d+\s+\d+:\d+:\d+)", line)
-
-        if match:
-            timestamp_str = match.group(1)
-
-            try:
-                timestamp = datetime.strptime(timestamp_str, "%b %d %H:%M:%S")
-            except ValueError:
-                timestamp = None
-        else:
-            timestamp = None
-
         event = {
+            "timestamp": None,
             "raw": line,
-            "timestamp": timestamp,
-            "correlation_key": extract_correlation_key(line)
         }
 
-        normalized.append(event)
+        # Try parsing standard SSH log format
+        # Example:
+        # Feb 15 21:25:32 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
 
-    return normalized
+        try:
+            parts = line.split()
+            month = parts[0]
+            day = parts[1]
+            time = parts[2]
 
+            timestamp_str = f"{month} {day} {time}"
+            timestamp = datetime.strptime(timestamp_str, "%b %d %H:%M:%S")
 
-def extract_correlation_key(line):
-    if "Failed password" in line:
-        return "failed_login"
-    elif "Accepted password" in line:
-        return "successful_login"
-    elif "wget" in line:
-        return "download_command"
-    elif "sudo" in line:
-        return "privilege_escalation"
-    else:
-        return "unknown"
+            event["timestamp"] = timestamp
+        except Exception:
+            # If parsing fails, keep raw only
+            event["timestamp"] = None
+
+        events.append(event)
+
+    return events
 

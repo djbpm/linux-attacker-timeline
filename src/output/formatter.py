@@ -1,29 +1,31 @@
-def print_detections(detections):
-    print("===== DETECTIONS =====")
-
+﻿def print_detections(detections):
     if not detections:
-        print("No security alerts detected.")
+        print("No detections found.")
         return
 
-    for detection in detections:
-        rule_name = detection.get("rule_name", "Unknown Rule")
-        severity = detection.get("severity", "Unknown")
-        raw_event = detection.get("event", {}).get("raw", "No raw event")
+    for alert in detections:
+        print(f"[ALERT] {alert.get('rule_name', 'Unknown')}")
+        print(f"Severity: {alert.get('severity')}")
+        print(f"MITRE Technique: {alert.get('mitre_technique')}")
+        print(f"Tactic: {alert.get('tactic')}")
 
-        print(f"\n[ALERT] {rule_name}")
-        print(f"Severity: {severity}")
-        print(f"Event: {raw_event}")
+        for event in alert.get("events", []):
+            if isinstance(event, dict) and "raw" in event:
+                print(f"Event: {event['raw']}")
+            else:
+                print(f"Event: {event}")
+
+        print()
 
 
 def print_timeline(timeline):
-    print("\n===== ATTACK TIMELINE =====")
+    for event in timeline:
+        if isinstance(event, dict) and "raw" in event:
+            print(event["raw"])
+        else:
+            print(event)
 
-    if not timeline:
-        print("No events available.")
-        return
 
-    for item in timeline:
-        timestamp = item.get("timestamp", "N/A")
-        raw = item.get("raw", "No raw event")
-        print(f"[{timestamp}] {raw}")
-
+def print_summary(total_events, total_alerts):
+    print(f"Total Events Processed: {total_events}")
+    print(f"Total Alerts Generated: {total_alerts}")

@@ -1,28 +1,21 @@
 import json
- HEAD
-
-
-def export_to_json(detections, filename="detections.json"):
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(detections, f, indent=4)
-
 from datetime import datetime
 
 
-def convert_datetime(obj):
+def default_serializer(obj):
     if isinstance(obj, datetime):
         return obj.isoformat()
     return str(obj)
 
 
-def export_to_json(detections, filename="detections.json"):
-    with open(filename, "w") as f:
+def export_json(file_path, detections, timeline):
+    with open(file_path, "w", encoding="utf-8") as f:
         json.dump(
-            detections,
+            {
+                "detections": detections,
+                "timeline": timeline
+            },
             f,
             indent=4,
-            default=convert_datetime
+            default=default_serializer
         )
- fdd4fa6 (Add CI pipeline with GitHub Actions)
-
-    print(f"[INFO] JSON exported to {filename}")
