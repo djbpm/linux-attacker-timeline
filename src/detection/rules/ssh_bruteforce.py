@@ -10,23 +10,19 @@ class SSHBruteForceRule(BaseRule):
 
     def evaluate(self, events):
         alerts = []
-        failed_count = 0
+        failed_events = []
 
         for event in events:
             raw = event.get("raw", "")
             if "Failed password" in raw:
-                failed_count += 1
+                failed_events.append(raw)
 
-        if failed_count >= 5:
+        if len(failed_events) >= 5:
             alerts.append(
-                {
-                    "rule_id": self.rule_id,
-                    "description": self.description,
-                    "technique_id": self.technique_id,
-                    "tactic": self.tactic,
-                    "severity": self.severity,
-                    "count": failed_count,
-                }
+                self.build_alert(
+                    evidence=failed_events[:5],
+                    confidence="high" if len(failed_events) > 10 else "medium"
+                )
             )
 
         return alerts
