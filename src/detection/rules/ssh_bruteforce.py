@@ -2,27 +2,31 @@ from src.detection.rules.base_rule import BaseRule
 
 
 class SSHBruteForceRule(BaseRule):
-    name = "Possible SSH Brute Force"
-    severity = "HIGH"
-    mitre_technique = "T1110"
+    rule_id = "SSH_BRUTE_FORCE"
+    description = "Multiple failed SSH login attempts detected"
+    technique_id = "T1110"
     tactic = "Credential Access"
+    severity = "medium"
 
     def evaluate(self, events):
-        failed = []
+        alerts = []
+        failed_count = 0
 
         for event in events:
-            log = event.get("raw", "")
+            raw = event.get("raw", "")
+            if "Failed password" in raw:
+                failed_count += 1
 
-            if "Failed password" in log:
-                failed.append(event)
+        if failed_count >= 5:
+            alerts.append(
+                {
+                    "rule_id": self.rule_id,
+                    "description": self.description,
+                    "technique_id": self.technique_id,
+                    "tactic": self.tactic,
+                    "severity": self.severity,
+                    "count": failed_count,
+                }
+            )
 
-        if len(failed) >= 3:
-            return [{
-                "rule_name": self.name,
-                "severity": self.severity,
-                "mitre_technique": self.mitre_technique,
-                "tactic": self.tactic,
-                "events": failed
-            }]
-
-        return []
+        return alerts

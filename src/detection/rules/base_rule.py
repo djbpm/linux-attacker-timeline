@@ -1,7 +1,9 @@
 class BaseRule:
-    rule_id = "BASE"
-    rule_name = "Base Rule"
-    severity = "LOW"
+    rule_id = "BASE_RULE"
+    description = "Base detection rule"
+    technique_id = "N/A"
+    tactic = "N/A"
+    severity = "low"
 
-    def run(self, events):
-        raise NotImplementedError("Rule must implement run()")
+    def evaluate(self, events):
+        raise NotImplementedError("Rules must implement evaluate()")
