@@ -1,3 +1,4 @@
+[![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml)
 # Linux Attacker Timeline Detection Engine
 
 ![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)
