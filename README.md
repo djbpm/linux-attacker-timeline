@@ -1,28 +1,112 @@
-[![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml)
 # Linux Attacker Timeline Detection Engine
 
 ![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)
-![Security Scan](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/security.yml/badge.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.9%2B-informational)
-![CodeQL](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/codeql.yml/badge.svg)
-
+![Security Scan](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/codeql.yml/badge.svg)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
 
 A modular log analysis and detection framework that reconstructs attacker activity timelines and maps findings to MITRE ATT&CK techniques.
 
-## Architecture
-The detection engine follows a modular pipeline-based architecture.
+---
 
-Each stage is isolated by responsibility, allowing independent testing,
-extension, and rule evolution without breaking upstream or downstream logic.
+## 🔎 Overview
 
-### Design Principles
+This engine ingests Linux authentication and system logs, normalizes events, correlates related activity, applies rule-based detection logic, maps alerts to MITRE ATT&CK techniques, and reconstructs attacker timelines.
 
-- Separation of concerns between parsing, detection, and rendering
-- Deterministic rule-based detection logic
-- MITRE ATT&CK alignment for structured threat mapping
-- Test-driven validation using pytest and CI
-- Extensible rule engine for future plugin support
+It is designed as a modular, pipeline-based detection system with extensibility in mind.
+
+---
+
+## 🏗 Architecture
+
+The detection engine follows a structured pipeline:
+Log Input
+↓
+Parser
+↓
+Normalization
+↓
+Correlation
+↓
+Detection Engine
+↓
+MITRE Mapping
+↓
+Timeline Builder
+↓
+Output Renderer
+
+
+Each stage is isolated by responsibility, allowing independent testing and evolution.
+
+---
+
+## 📂 Project Structure
+
+src/
+├── cli.py # CLI entry point
+├── parser/ # Log parsing logic
+│ └── log_parser.py
+├── detection/
+│ ├── rule_engine.py # Rule evaluation engine
+│ ├── rule_registry.py # Rule registration & loading
+│ └── rules/ # Individual detection rules
+│ ├── ssh_bruteforce_success.py
+│ ├── sudo_privilege_escalation.py
+│ ├── reverse_shell.py
+│ ├── new_user_creation.py
+│ └── multi_stage_attack.py
+├── correlator/ # Event correlation logic
+├── timeline/ # Timeline reconstruction
+├── output/ # CLI rendering / JSON formatting
+tests/ # Pytest test suite
+
+
+---
+
+## 🚨 Detection Capabilities
+
+Current implemented detections:
+
+- SSH Brute Force Success
+- Suspicious Privilege Escalation
+- Reverse Shell Execution
+- Unauthorized User Creation
+- Multi-Stage Attack Correlation
+- MITRE ATT&CK Technique Mapping
+
+---
+
+## 🧠 Multi-Stage Correlation
+
+The engine can correlate multiple related events into a single critical alert:
+
+Example chain:
+
+Brute Force → Successful Login
+→ Privilege Escalation
+→ Reverse Shell
+→ Backdoor User Creation
+
+
+This enables detection of attacker kill chains rather than isolated events.
+
+---
+
+
+Design Principles
+
+Modular detection engine
+
+Clear separation of parsing, correlation, and detection
+
+Deterministic rule-based evaluation
+
+MITRE ATT&CK alignment
+
+Extensible rule framework
+
+CI-driven validation
 
 ## System Flow
 
@@ -101,28 +185,6 @@ python -m src.cli --input src/sample.log
 ```bash
 pytest
 ```
-
-
-
-
-## Project Structure
-
-src/
-+-- collector/
-+-- correlator/
-+-- detection/
-+-- intel/
-+-- normalizer/
-+-- output/
-+-- timeline/
-
-## Design Principles
-
-- Modular detection engine
-- Pattern-based correlation
-- Frequency-aware detection logic
-- MITRE ATT&CK alignment
-- Extensible rule framework
 
 ## Roadmap
 
