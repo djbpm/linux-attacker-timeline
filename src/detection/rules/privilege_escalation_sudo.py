@@ -1,5 +1,4 @@
-from src.detection.rules.base_rule import BaseRule
-
+from .base_rule import BaseRule
 
 class SudoPrivilegeEscalationRule(BaseRule):
     rule_id = "SUDO_PRIVILEGE_ESCALATION"

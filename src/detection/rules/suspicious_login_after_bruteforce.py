@@ -1,4 +1,4 @@
-from src.detection.rules.base_rule import BaseRule
+from .base_rule import BaseRule
 
 
 class SuspiciousLoginAfterBruteForceRule(BaseRule):

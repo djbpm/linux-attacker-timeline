@@ -1,23 +1,24 @@
 def build_timeline(events):
     """
-    Build a sorted attack timeline from correlated events.
+    Builds a sorted timeline from parsed events.
+    Handles both dict events and raw string events safely.
     """
 
-    if not events:
-        return []
+    structured_events = []
 
-    # Sort safely (avoid KeyError)
-    sorted_events = sorted(
-        events,
-        key=lambda e: e.get("timestamp", "")
-    )
+    for event in events:
+        # If event is already structured
+        if isinstance(event, dict):
+            structured_events.append(event)
 
-    timeline = []
+        # If event is raw string, convert it
+        elif isinstance(event, str):
+            structured_events.append({
+                "timestamp": event.split(" ")[0],
+                "raw": event
+            })
 
-    for event in sorted_events:
-        timeline.append({
-            "timestamp": event.get("timestamp", "N/A"),
-            "raw": event.get("raw", "No raw event")
-        })
+    # Sort safely by timestamp
+    structured_events.sort(key=lambda x: x.get("timestamp", ""))
 
-    return timeline
+    return structured_events
