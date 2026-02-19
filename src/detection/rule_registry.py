@@ -15,3 +15,5 @@ def get_rules():
         NewUserCreationRule(),
         MultiStageAttackRule(),
     ]
+def get_all_rules():
+    return get_rules()
