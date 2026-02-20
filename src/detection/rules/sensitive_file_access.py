@@ -18,13 +18,12 @@ class SensitiveFileAccessRule(BaseRule):
         for e in events:
             raw = e.get("raw", "")
             if any(f in raw for f in sensitive_files):
-                return [{
-                    "rule_id": self.rule_id,
-                    "description": self.description,
-                    "severity": self.severity,
-                    "technique_id": self.technique_id,
-                    "tactic": self.tactic,
-                    "evidence": raw,
-                    "confidence": "medium"
-                }]
+                return [
+                    self.build_alert(
+                        evidence=raw,
+                        event=e,
+                        confidence="medium"
+                    )
+                ]
+
         return []

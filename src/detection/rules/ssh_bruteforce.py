@@ -1,4 +1,4 @@
-from .base_rule import BaseRule
+﻿from .base_rule import BaseRule
 
 
 class SSHBruteForceRule(BaseRule):
@@ -14,14 +14,13 @@ class SSHBruteForceRule(BaseRule):
 
     def evaluate(self, events):
         failed = [e for e in events if "Failed password" in e.get("raw", "")]
-        if len(failed) >= 5:
-            return [{
-                "rule_id": self.rule_id,
-                "description": self.description,
-                "severity": self.severity,
-                "technique_id": self.technique_id,
-                "tactic": self.tactic,
-                "evidence": f"{len(failed)} failed SSH attempts detected",
-                "confidence": "high"
-            }]
+
+        if len(failed) > 5:
+            return [
+                self.build_alert(
+                    f"{len(failed)} failed SSH attempts detected",
+                    event=failed[0]
+                )
+            ]
+
         return []

@@ -1,14 +1,15 @@
-from src.detection.rules.base_rule import BaseRule
+from .base_rule import BaseRule
 
 
 class LogTamperingRule(BaseRule):
+
     def __init__(self):
         super().__init__(
-            rule_id="LOG_TAMPERING",
-            description="Possible log tampering or indicator removal detected",
-            severity="high",
-            technique_id="T1070",
-            tactic="Defense Evasion"
+            "LOG_TAMPERING",
+            "Possible log tampering or indicator removal detected",
+            "high",
+            "T1070",
+            "Defense Evasion"
         )
 
         self.suspicious_patterns = [
@@ -16,7 +17,7 @@ class LogTamperingRule(BaseRule):
             "rm -rf /var/log",
             "truncate -s 0",
             "> /var/log",
-            "echo \"\" > /var/log",
+            "echo '' > /var/log",
             "sed -i",
             "journalctl --vacuum",
             "history -c",
@@ -33,6 +34,7 @@ class LogTamperingRule(BaseRule):
                 if pattern in raw:
                     alert = self.build_alert(
                         evidence=f"Log tampering pattern detected: {pattern}",
+                        event=event,
                         confidence="high"
                     )
                     alerts.append(alert)

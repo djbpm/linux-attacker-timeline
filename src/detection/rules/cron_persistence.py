@@ -14,14 +14,13 @@ class CronPersistenceRule(BaseRule):
 
     def evaluate(self, events):
         for e in events:
-            if "CRON" in e.get("raw", ""):
-                return [{
-                    "rule_id": self.rule_id,
-                    "description": self.description,
-                    "severity": self.severity,
-                    "technique_id": self.technique_id,
-                    "tactic": self.tactic,
-                    "evidence": e.get("raw"),
-                    "confidence": "medium"
-                }]
+            if "cron" in e.get("raw", "").lower():
+                return [
+                    self.build_alert(
+                        evidence=e.get("raw"),
+                        event=e,
+                        confidence="medium"
+                    )
+                ]
+
         return []

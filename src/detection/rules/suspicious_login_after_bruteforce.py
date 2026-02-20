@@ -2,31 +2,30 @@ from .base_rule import BaseRule
 
 
 class SuspiciousLoginAfterBruteForceRule(BaseRule):
-    rule_id = "SSH_SUCCESS_AFTER_BRUTE_FORCE"
-    description = "Successful SSH login after multiple failed attempts"
-    technique_id = "T1078"
-    tactic = "Initial Access"
-    severity = "high"
+
+    def __init__(self):
+        super().__init__(
+            "SUSPICIOUS_LOGIN_AFTER_BRUTEFORCE",
+            "Suspicious login detected after brute force attempts",
+            "high",
+            "T1078",
+            "Initial Access"
+        )
 
     def evaluate(self, events):
-        alerts = []
-        failed_detected = False
+        failed = [e for e in events if "Failed password" in e.get("raw", "")]
+        success = [e for e in events if "Accepted password" in e.get("raw", "")]
 
-        for event in events:
-            raw = event.get("raw", "")
+        if len(failed) > 5 and len(success) >= 1:
+            # use the first successful login event as reference
+            reference_event = success[0]
 
-            if "Failed password" in raw:
-                failed_detected = True
-
-            if failed_detected and "Accepted password" in raw:
-                alerts.append(
-                    {
-                        "rule_id": self.rule_id,
-                        "description": self.description,
-                        "technique_id": self.technique_id,
-                        "tactic": self.tactic,
-                        "severity": self.severity,
-                    }
+            return [
+                self.build_alert(
+                    evidence="Login occurred after multiple failed attempts",
+                    event=reference_event,
+                    confidence="high"
                 )
+            ]
 
-        return alerts
+        return []

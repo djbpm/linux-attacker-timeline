@@ -1,4 +1,3 @@
-@'
 from collections import defaultdict
 
 
@@ -38,4 +37,3 @@ class AttackChainEngine:
                 })
 
         return incidents
-'@ | Set-Content src\correlation\attack_chain_engine.py

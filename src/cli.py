@@ -1,12 +1,12 @@
 ﻿import argparse
 import json
+
 from src.parser.log_parser import parse_log_file
-from src.detection.rule_registry import get_rules
+from src.detection.rule_registry import get_all_rules
 from src.correlation.attack_chain_engine import AttackChainEngine
 
 
 def main():
-
     parser = argparse.ArgumentParser(
         description="Linux Attacker Timeline Engine"
     )
@@ -32,7 +32,7 @@ def main():
     events = parse_log_file(args.input)
 
     # Load rules
-    rules = get_rules()
+    rules = get_all_rules()
 
     alerts = []
     for rule in rules:
@@ -42,9 +42,8 @@ def main():
     engine = AttackChainEngine()
     incidents = engine.correlate(alerts)
 
-    # ----- OUTPUT SECTION -----
+    # OUTPUT SECTION
     if args.output == "json":
-
         output_data = {
             "alerts": alerts,
             "incidents": incidents,
@@ -58,7 +57,6 @@ def main():
         print(json.dumps(output_data, indent=4))
 
     else:
-
         print("\n----- Correlated Incidents -----\n")
         for incident in incidents:
             print(incident)
@@ -72,7 +70,7 @@ def main():
         print(f"Total Alerts Generated: {len(alerts)}")
         print(f"Total Incidents Generated: {len(incidents)}")
 
-        print("INFO - Pipeline execution complete.")
+    print("INFO - Pipeline execution complete.")
 
 
 if __name__ == "__main__":

@@ -13,15 +13,16 @@ class SudoPrivilegeEscalationRule(BaseRule):
         )
 
     def evaluate(self, events):
-        for e in events:
-            if "sudo:" in e.get("raw", ""):
-                return [{
-                    "rule_id": self.rule_id,
-                    "description": self.description,
-                    "severity": self.severity,
-                    "technique_id": self.technique_id,
-                    "tactic": self.tactic,
-                    "evidence": e.get("raw"),
-                    "confidence": "high"
-                }]
+        for event in events:
+            raw = event.get("raw", "")
+
+            if "sudo:" in raw and "COMMAND=" in raw:
+                return [
+                    self.build_alert(
+                        evidence=raw,
+                        event=event,
+                        confidence="high"
+                    )
+                ]
+
         return []

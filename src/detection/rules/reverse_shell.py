@@ -13,15 +13,14 @@ class ReverseShellRule(BaseRule):
         )
 
     def evaluate(self, events):
-        for e in events:
-            if "/dev/tcp/" in e.get("raw", ""):
-                return [{
-                    "rule_id": self.rule_id,
-                    "description": self.description,
-                    "severity": self.severity,
-                    "technique_id": self.technique_id,
-                    "tactic": self.tactic,
-                    "evidence": e.get("raw"),
-                    "confidence": "high"
-                }]
+        matches = [e for e in events if "/dev/tcp/" in e.get("raw", "")]
+
+        if matches:
+            return [
+                self.build_alert(
+                    matches[0].get("raw"),
+                    event=matches[0]
+                )
+            ]
+
         return []
