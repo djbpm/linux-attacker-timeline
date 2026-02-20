@@ -1,27 +1,30 @@
 from .base_rule import BaseRule
 
 
-class SudoPrivilegeEscalationRule(BaseRule):
+class SensitiveFileAccessRule(BaseRule):
 
     def __init__(self):
         super().__init__(
-            "SUDO_PRIVILEGE_ESCALATION",
-            "Suspicious sudo privilege escalation attempt",
-            "high",
-            "T1548",
-            "Privilege Escalation"
+            "SENSITIVE_FILE_ACCESS",
+            "Sensitive file access detected",
+            "medium",
+            "T1005",
+            "Collection"
         )
 
     def evaluate(self, events):
+        sensitive_files = ["/etc/shadow", "/etc/passwd"]
+
         for e in events:
-            if "sudo:" in e.get("raw", ""):
+            raw = e.get("raw", "")
+            if any(f in raw for f in sensitive_files):
                 return [{
                     "rule_id": self.rule_id,
                     "description": self.description,
                     "severity": self.severity,
                     "technique_id": self.technique_id,
                     "tactic": self.tactic,
-                    "evidence": e.get("raw"),
-                    "confidence": "high"
+                    "evidence": raw,
+                    "confidence": "medium"
                 }]
         return []

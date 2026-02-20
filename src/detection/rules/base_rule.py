@@ -1,12 +1,12 @@
 class BaseRule:
-    def __init__(self):
-        self.rule_id = "BASE_RULE"
-        self.description = ""
-        self.technique_id = None
-        self.tactic = None
-        self.severity = "low"
+    def __init__(self, rule_id, description, severity, technique_id, tactic):
+        self.rule_id = rule_id
+        self.description = description
+        self.severity = severity
+        self.technique_id = technique_id
+        self.tactic = tactic
 
-    def build_alert(self, evidence, confidence):
+    def build_alert(self, evidence, confidence="medium"):
         return {
             "rule_id": self.rule_id,
             "description": self.description,

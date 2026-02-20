@@ -1,37 +1,30 @@
-from src.detection.rules.base_rule import BaseRule
+from .base_rule import BaseRule
 
 
 class SSHBruteForceSuccessRule(BaseRule):
+
     def __init__(self):
-        super().__init__()
-        self.rule_id = "SSH_BRUTE_FORCE_SUCCESS"
-        self.description = "Successful login after multiple SSH failures"
-        self.technique_id = "T1078"
-        self.tactic = "Initial Access"
-        self.severity = "high"
+        super().__init__(
+            "SSH_BRUTE_FORCE_SUCCESS",
+            "Successful login after multiple SSH failures",
+            "high",
+            "T1078",
+            "Initial Access"
+        )
 
     def evaluate(self, events):
-        alerts = []
+        failed = [e for e in events if "Failed password" in e.get("raw", "")]
+        success = [e for e in events if "Accepted password" in e.get("raw", "")]
 
-        failed_attempts = []
-        success_event = None
+        if len(failed) >= 5 and len(success) >= 1:
+            return [{
+                "rule_id": self.rule_id,
+                "description": self.description,
+                "severity": self.severity,
+                "technique_id": self.technique_id,
+                "tactic": self.tactic,
+                "evidence": "Successful login after multiple failures",
+                "confidence": "high"
+            }]
 
-        for event in events:
-            raw = event.get("raw", "")
-
-            if "Failed password" in raw:
-                failed_attempts.append(event)
-
-            if "Accepted password" in raw:
-                success_event = event
-
-        if success_event and len(failed_attempts) >= 5:
-            alerts.append(
-                self.build_alert(
-                    evidence=f"Successful login after {len(failed_attempts)} failures",
-                    confidence="high"
-                )
-            )
-
-        return alerts
-
+        return []
