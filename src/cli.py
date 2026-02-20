@@ -1,40 +1,64 @@
 ﻿import argparse
 import json
-from src.correlation.attack_chain_engine import AttackChainEngine
 from src.parser.log_parser import parse_log_file
-from src.timeline.timeline_builder import build_timeline
-from src.detection.rule_engine import RuleEngine
 from src.detection.rule_registry import get_rules
+from src.correlation.attack_chain_engine import AttackChainEngine
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Linux Attacker Timeline")
-    parser.add_argument("--input", required=True, help="Path to log file")
-    parser.add_argument("--json", action="store_true", help="Enable JSON output mode")
+
+    parser = argparse.ArgumentParser(
+        description="Linux Attacker Timeline Engine"
+    )
+
+    parser.add_argument(
+        "--input",
+        required=True,
+        help="Path to input log file"
+    )
+
+    parser.add_argument(
+        "--output",
+        choices=["text", "json"],
+        default="text",
+        help="Output format (text or json)"
+    )
 
     args = parser.parse_args()
 
     print("INFO - Starting Linux Attacker Timeline pipeline")
 
+    # Parse log
     events = parse_log_file(args.input)
 
+    # Load rules
     rules = get_rules()
-    engine = RuleEngine(rules)
 
-    alerts = engine.detect(events)
+    alerts = []
+    for rule in rules:
+        alerts.extend(rule.evaluate(events))
 
-    chain_engine = AttackChainEngine()
-    incidents = chain_engine.correlate(alerts)
+    # Correlation
+    engine = AttackChainEngine()
+    incidents = engine.correlate(alerts)
 
-    if args.json:
-        output = {
-            "events_processed": len(events),
-            "alerts_generated": len(alerts),
+    # ----- OUTPUT SECTION -----
+    if args.output == "json":
+
+        output_data = {
             "alerts": alerts,
-            "incidents": incidents
+            "incidents": incidents,
+            "summary": {
+                "total_events": len(events),
+                "total_alerts": len(alerts),
+                "total_incidents": len(incidents)
+            }
         }
-        print(json.dumps(output, default=str, indent=4))
+
+        print(json.dumps(output_data, indent=4))
+
     else:
+
         print("\n----- Correlated Incidents -----\n")
         for incident in incidents:
             print(incident)
@@ -43,14 +67,11 @@ def main():
         for alert in alerts:
             print(alert)
 
-        print("\n----- ATTACK TIMELINE -----\n")
-        timeline = build_timeline(events)
-        for line in timeline:
-            print(line)
-
         print("\n----- SUMMARY -----\n")
         print(f"Total Events Processed: {len(events)}")
         print(f"Total Alerts Generated: {len(alerts)}")
+        print(f"Total Incidents Generated: {len(incidents)}")
+
         print("INFO - Pipeline execution complete.")
 
 
