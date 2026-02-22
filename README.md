@@ -1,172 +1,147 @@
-# Linux Attacker Timeline Detection Engine
 
 ![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)
 ![Security Scan](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/codeql.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+# Linux Attacker Timeline Detection Engine
 
-A modular log analysis and detection framework that reconstructs attacker activity timelines and maps findings to MITRE ATT&CK techniques.
+[![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)]()
+[![CodeQL](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/codeql.yml/badge.svg)]()
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+
+A modular, pipeline-based Linux detection engine that reconstructs attacker kill chains from raw system logs and maps activity to MITRE ATT&CK techniques.
+
+This project focuses on multi-stage attack detection, structured logging, and deterministic rule execution within a clean, extensible architecture.
 
 ---
 
-## 🔎 Overview
+## Purpose
 
-This engine ingests Linux authentication and system logs, normalizes events, correlates related activity, applies rule-based detection logic, maps alerts to MITRE ATT&CK techniques, and reconstructs attacker timelines.
+Attackers operate in sequences — not isolated events.
 
-It is designed as a modular, pipeline-based detection system with extensibility in mind.
+This engine is designed to:
+
+- Ingest Linux authentication & system logs
+- Normalize raw log lines into structured event objects
+- Apply rule-based detection logic
+- Generate severity-classified alerts
+- Correlate related alerts into multi-stage attack chains
+- Map detections to MITRE ATT&CK tactics & techniques
+- Reconstruct attacker activity timelines
+
+The goal is to simulate a lightweight SOC-grade detection pipeline with clean architecture and CI-backed validation.
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
-The detection engine follows a structured pipeline:
+The engine follows a structured pipeline:
 Log Input
 ↓
-Parser
+Collection
 ↓
 Normalization
 ↓
-Correlation
-↓
 Detection Engine
+↓
+Correlation Engine
 ↓
 MITRE Mapping
 ↓
 Timeline Builder
 ↓
 Output Renderer
-
-
-Each stage is isolated by responsibility, allowing independent testing and evolution.
+---
+Each stage is isolated by responsibility, allowing independent testing and future extensibility.
 
 ---
 
-## 📂 Project Structure
-
+## 📁 Project Structure
 src/
-├── cli.py # CLI entry point
-├── parser/ # Log parsing logic
-│ └── log_parser.py
+├── cli.py                    # CLI entry point
+├── parser/                   # Log parsing logic
+├── normalizer/               # Event normalization
 ├── detection/
-│ ├── rule_engine.py # Rule evaluation engine
-│ ├── rule_registry.py # Rule registration & loading
-│ └── rules/ # Individual detection rules
-│ ├── ssh_bruteforce_success.py
-│ ├── sudo_privilege_escalation.py
-│ ├── reverse_shell.py
-│ ├── new_user_creation.py
-│ └── multi_stage_attack.py
-├── correlator/ # Event correlation logic
-├── timeline/ # Timeline reconstruction
-├── output/ # CLI rendering / JSON formatting
-tests/ # Pytest test suite
+│   ├── rule_engine.py        # Rule evaluation engine
+│   ├── rule_registry.py      # Rule loading & registration
+│   └── rules/                # Individual detection rules
+├── correlation/              # Multi-stage attack correlation
+├── timeline/                 # Timeline reconstruction
+├── output/                   # CLI & JSON rendering
+└── utils/                    # Logging & shared utilities
 
+tests/                        # Pytest test suite
 
 ---
-
-## 🚨 Detection Capabilities
-
-Current implemented detections:
-
-- SSH Brute Force Success
-- Suspicious Privilege Escalation
-- Reverse Shell Execution
-- Unauthorized User Creation
-- Multi-Stage Attack Correlation
-- MITRE ATT&CK Technique Mapping
-
----
-
-## 🧠 Multi-Stage Correlation
-
-The engine can correlate multiple related events into a single critical alert:
-
-Example chain:
-
-Brute Force → Successful Login
-→ Privilege Escalation
-→ Reverse Shell
-→ Backdoor User Creation
-
-
-This enables detection of attacker kill chains rather than isolated events.
-
----
-
-
-Design Principles
-
-Modular detection engine
-
-Clear separation of parsing, correlation, and detection
-
-Deterministic rule-based evaluation
-
-MITRE ATT&CK alignment
-
-Extensible rule framework
-
-CI-driven validation
-
-## System Flow
-
-```mermaid
-graph TD
-    A[Log File Input] --> B[Collection]
-    B --> C[Normalization]
-    C --> D[Correlation]
-    D --> E[Detection Engine]
-    E --> F[MITRE Mapping]
-    F --> G[Timeline Builder]
-    G --> H[Output Renderer]
-```
-
-### Component Responsibilities
-
-**Collection**
-- Ingests raw log input
-- Handles file loading and basic validation
-
-**Normalization**
-- Transforms raw log lines into structured event objects
-- Ensures consistent schema for downstream processing
-
-**Correlation**
-- Links related events into logical attack chains
-- Enables multi-stage attack detection
-
-**Detection Engine**
-- Applies rule-based logic to normalized events
-- Produces alert objects with severity classification
-
-**MITRE Mapping**
-- Maps detection results to MITRE ATT&CK techniques
-- Adds tactic and technique context
-
-**Timeline Builder**
-- Orders correlated events chronologically
-- Reconstructs attacker activity flow
-
-**Output Renderer**
-- Formats alerts and timelines for CLI output
-- Future support: JSON export / SIEM integration
-
 
 ## Detection Capabilities
 
-- Brute Force Login Detection (T1110)
-- Suspicious Tool Transfer (T1105)
-- Multi-Stage Attack Correlation
-- Timeline Reconstruction
-- MITRE ATT&CK Technique Mapping
+Currently implemented detections include:
 
-## Usage
-### 1️⃣ Clone the Repository
+- SSH Brute Force Success
+- Suspicious Login After Multiple Failures
+- Sudo Privilege Escalation
+- Reverse Shell Execution
+- Cron-Based Persistence
+- Log Tampering Detection
+- Unauthorized User Creation
+- Multi-Stage Attack Correlation
+- MITRE ATT&CK Technique Mapping
+- Timeline Reconstruction
+
+Example correlated attack chain:
+Brute Force
+→ Successful Login
+→ Privilege Escalation
+→ Reverse Shell
+→ Persistence
+→ Log Tampering
+
+This enables detection of attacker progression instead of isolated alerts.
+
+---
+
+## Engine Observability
+
+The engine includes:
+
+- Structured logging
+- Log-level controls (DEBUG / INFO / WARNING / ERROR)
+- Stage-based debug summaries
+- Execution timing instrumentation
+- Alert count aggregation
+- Correlated incident summaries
+
+Example pipeline output:
+
+DEBUG | Parsed 17 events
+DEBUG | Loaded 7 detection rules
+DEBUG | Generated 7 alerts
+DEBUG | Generated 1 correlated incident
+
+---
+
+## Design Principles
+
+- Modular pipeline architecture
+- Clear separation of parsing, detection, and correlation
+- Deterministic rule-based evaluation
+- Multi-stage attack awareness
+- MITRE ATT&CK alignment
+- Extensible rule framework
+- CI-driven validation
+
+---
+
+## 🖥 Usage
+
+### Clone Repository
 
 ```bash
-git clone https://github.com/djbpm/linux-attacker-timeline.git
+git clone https://github.com/djbpm/linux-attacker-timeline
 cd linux-attacker-timeline
-```
+
 
 ### 2️⃣ Install Dependencies
 
@@ -179,6 +154,10 @@ pip install -r requirements.txt
 ```bash
 python -m src.cli --input src/sample.log
 ```
+### Optional flags
+
+python -m src.cli --input src/sample.log --output json
+python -m src.cli --input src/sample.log --log-level DEBUG
 
 ### 4️⃣ Run Test Suite
 
@@ -186,12 +165,31 @@ python -m src.cli --input src/sample.log
 pytest
 ```
 
-## Roadmap
+Current Status
 
-- JSON export support
-- Unit test coverage
-- Structured logging
-- CI pipeline
-- Plugin rule system
+Phase 1 – Detection Ladder: Complete
+Completed:
+	•	Detection rule framework
+	•	Alert aggregation
+	•	Multi-stage correlation (basic implementation)
+	•	MITRE mapping
+	•	Structured logging
+	•	Debug instrumentation
+	•	CLI interface
+	•	CI validation
 
-Author: Kailas
+  Phase 2 Roadmap
+	•	Intelligence-driven multi-stage correlation
+	•	Enhanced JSON export schema
+	•	Plugin-based rule architecture
+	•	CI stability improvements
+	•	Expanded test coverage
+
+License
+
+MIT License
+
+Author
+
+Kailas
+sunsetmachine
