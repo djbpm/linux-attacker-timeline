@@ -156,12 +156,38 @@ DEBUG | Generated 1 correlated incident
 - Extensible rule framework
 - CI-driven validation
 
+## usage
+## Quick Start
+
+```bash
+# Clone repository
+git clone https://github.com/djbpm/linux-attacker-timeline
+cd linux-attacker-timeline
+
+# Create virtual environment
+python -m venv venv
+
+# Activate (Windows)
+venv\Scripts\activate
+
+# Activate (Linux/macOS)
+# source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run detection engine
+python -m src.cli --input src/sample.log
+
+# Run with debug visibility
+python -m src.cli --input src/sample.log --log-level DEBUG
+
+# Run with JSON output
+python -m src.cli --input src/sample.log --output json
+
+# Run test suite
+pytest
 ---
-
-
-
-
-```
 
 Current Status
 
