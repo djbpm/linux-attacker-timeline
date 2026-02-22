@@ -53,10 +53,8 @@ Each stage is isolated by responsibility, allowing independent testing and futur
 
 ---
 
-## 📁 Project Structure
----
 
-# 🧠 System Architecture
+# System Architecture
 
 The engine follows a deterministic, stage-isolated detection pipeline.
 
@@ -160,13 +158,6 @@ DEBUG | Generated 1 correlated incident
 
 ---
 
-## 🖥 Usage
-
-### Clone Repository
-
-```bash
-git clone https://github.com/djbpm/linux-attacker-timeline
-cd linux-attacker-timeline
 
 
 ### 2️⃣ Install Dependencies
