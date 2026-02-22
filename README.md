@@ -1,8 +1,4 @@
 
-![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)
-![Security Scan](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/codeql.yml/badge.svg)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Python](https://img.shields.io/badge/python-3.9%2B-blue)
 # Linux Attacker Timeline Detection Engine
 
 [![CI](https://github.com/djbpm/linux-attacker-timeline/actions/workflows/ci.yml/badge.svg)]()
