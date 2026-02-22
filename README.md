@@ -160,26 +160,7 @@ DEBUG | Generated 1 correlated incident
 
 
 
-### 2️⃣ Install Dependencies
 
-```bash
-pip install -r requirements.txt
-```
-
-### 3️⃣ Run the Detection Engine
-
-```bash
-python -m src.cli --input src/sample.log
-```
-### Optional flags
-
-python -m src.cli --input src/sample.log --output json
-python -m src.cli --input src/sample.log --log-level DEBUG
-
-### 4️⃣ Run Test Suite
-
-```bash
-pytest
 ```
 
 Current Status
