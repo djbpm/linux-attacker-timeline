@@ -54,23 +54,53 @@ Each stage is isolated by responsibility, allowing independent testing and futur
 ---
 
 ## 📁 Project Structure
-src/
-├── cli.py                    # CLI entry point
-├── parser/                   # Log parsing logic
-├── normalizer/               # Event normalization
-├── detection/
-│   ├── rule_engine.py        # Rule evaluation engine
-│   ├── rule_registry.py      # Rule loading & registration
-│   └── rules/                # Individual detection rules
-├── correlation/              # Multi-stage attack correlation
-├── timeline/                 # Timeline reconstruction
-├── output/                   # CLI & JSON rendering
-└── utils/                    # Logging & shared utilities
-
-tests/                        # Pytest test suite
-
 ---
 
+# 🧠 System Architecture
+
+The engine follows a deterministic, stage-isolated detection pipeline.
+
+```mermaid
+flowchart TD
+
+A[Log File Input]
+B[Collection Layer]
+C[Normalization Layer]
+D[Rule Engine]
+E[Alert Aggregation]
+F[Correlation Engine]
+G[MITRE ATT&CK Mapping]
+H[Timeline Builder]
+I[Output Renderer]
+
+A --> B
+B --> C
+C --> D
+D --> E
+E --> F
+F --> G
+G --> H
+H --> I
+
+linux-attacker-timeline/
+│
+├── src/
+│   ├── cli.py                  # CLI entry point
+│   │
+│   ├── parser/                 # Raw log ingestion
+│   ├── normalizer/             # Event normalization layer
+│   │
+│   ├── detection/
+│   │   ├── rule_engine.py      # Rule execution core
+│   │   ├── rule_registry.py    # Rule loading & registration
+│   │   └── rules/              # Individual detection rules
+│   │
+│   ├── correlation/            # Multi-stage attack correlation
+│   ├── timeline/               # Chronological reconstruction
+│   ├── output/                 # CLI & JSON rendering
+│   └── utils/                  # Logging & shared utilities
+│
+└── tests/                      # Pytest validation suite
 ## Detection Capabilities
 
 Currently implemented detections include:
